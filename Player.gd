@@ -5,6 +5,7 @@ const Bomb = preload("res://Bomb.tscn")
 var input_prefix := "player1_"
 
 var speed := 0.0
+var last_input_vector = Vector2.ZERO
 
 func _get_local_input() -> Dictionary:
 	var input_vector = Input.get_vector(input_prefix + "left", input_prefix + "right", input_prefix + "up", input_prefix + "down")
@@ -26,10 +27,20 @@ func _network_process(input: Dictionary) -> void:
 	var input_vector = input.get("input_vector", Vector2.ZERO)
 	if input_vector != Vector2.ZERO:
 		if speed < 16.0:
-			speed += 1.0
+			if speed + 1.0 <= 16.0:
+				speed += 1.0
+			else:
+				speed = 16.0
 		position += input_vector * speed
+		last_input_vector = input_vector
 	else:
-		speed = 0.0
+		if speed > 0.0:
+			if speed - 4.0 >= 0.0:
+				speed -= 4.0
+			else:
+				speed = 0.0
+			
+		position += last_input_vector * speed
 	
 	if input.get("drop_bomb", false):
 		SyncManager.spawn("Bomb", get_parent(), Bomb, { position = global_position })
@@ -38,11 +49,13 @@ func _save_state() -> Dictionary:
 	return {
 		position = position,
 		speed = speed,
+		last_input_vector = last_input_vector,
 	}
 
 func _load_state(state: Dictionary) -> void:
 	position = state['position']
 	speed = state['speed']
+	last_input_vector = state['last_input_vector']
 
 func _interpolate_state(old_state: Dictionary, new_state: Dictionary, weight: float) -> void:
 	position = lerp(old_state['position'], new_state['position'], weight)
