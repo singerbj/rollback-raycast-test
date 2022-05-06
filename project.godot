@@ -33,7 +33,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Rollback Tutorial"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://scenes/Main.tscn"
 config/icon="res://icon.png"
 
 [autoload]
@@ -103,15 +103,20 @@ player2_bomb={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":16777221,"unicode":0,"echo":false,"script":null)
  ]
 }
+firing={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
 
 [network]
 
 rollback/max_buffer_size=10
 rollback/interpolation=true
-rollback/classes/message_serializer="res://CustomMessageSerializer.gd"
+rollback/classes/message_serializer="res://scripts/CustomMessageSerializer.gd"
 rollback/debug/rollback_ticks=4
 rollback/debug/random_rollback_ticks=10
-rollback/log_inspector/replay_match_scene_path="res://Main.tscn"
+rollback/log_inspector/replay_match_scene_path="res://scenes/Main.tscn"
 
 [physics]
 

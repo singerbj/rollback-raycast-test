@@ -121,6 +121,7 @@ func _on_OnlineButton_pressed() -> void:
 	SyncManager.reset_network_adaptor()
 
 func _on_LocalButton_pressed() -> void:
+	$ServerPlayer.is_offline_master = true
 	$ClientPlayer.input_prefix = "player2_"
 	main_menu.visible = false
 	SyncManager.network_adaptor = DummyNetworkAdaptor.new()
