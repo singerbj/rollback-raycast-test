@@ -1,4 +1,4 @@
-extends Node2D
+extends Node
 
 const DummyNetworkAdaptor = preload("res://addons/godot-rollback-netcode/DummyNetworkAdaptor.gd")
 
@@ -9,6 +9,8 @@ onready var port_field = $CanvasLayer/ConnectionPanel/GridContainer/PortField
 onready var message_label = $CanvasLayer/MessageLabel
 onready var sync_lost_label = $CanvasLayer/SyncLostLabel
 onready var reset_button = $CanvasLayer/ResetButton
+
+var active_camera
 
 const LOG_FILE_DIRECTORY = 'user://detailed_logs'
 
@@ -23,6 +25,14 @@ func _ready() -> void:
 	SyncManager.connect("sync_lost", self, "_on_SyncManager_sync_lost")
 	SyncManager.connect("sync_regained", self, "_on_SyncManager_sync_regained")
 	SyncManager.connect("sync_error", self, "_on_SyncManager_sync_error")
+	SyncManager.connect("remote_state_mismatch", self, "_on_SyncManager_remote_state_mismatch")
+
+func _unhandled_input(event):
+	if Input.is_action_just_pressed("change_mouse_mode"):
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _on_ServerButton_pressed() -> void:
 	var peer = NetworkedMultiplayerENet.new()
@@ -73,6 +83,8 @@ func _on_ResetButton_pressed() -> void:
 
 func _on_SyncManager_sync_started() -> void:
 	message_label.text = "Started!"
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	if logging_enabled and not SyncReplay.active:
 		var dir = Directory.new()
@@ -126,3 +138,7 @@ func _on_LocalButton_pressed() -> void:
 	main_menu.visible = false
 	SyncManager.network_adaptor = DummyNetworkAdaptor.new()
 	SyncManager.start()
+
+func _on_SyncManager_remote_state_mismatch(tick: int, peer_id: int, local_hash: int, remote_hash: int) -> void:
+	print("mismatch:", SyncManager.state_buffer[SyncManager.state_buffer.size() - 1].data)
+	print("=============")

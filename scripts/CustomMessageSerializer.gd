@@ -7,8 +7,9 @@ const input_path_mapping := {
 
 enum HeaderFlags {
 	HAS_INPUT_VECTOR = 1 << 0, # Bit 0
-	HAS_FIRING =       1 << 1, # Bit 1
-	DROP_BOMB =        1 << 2, # Bit 2
+	HAS_MOUSE_MOTION = 1 << 1, # Bit 1
+	HAS_FIRING =       1 << 2, # Bit 2
+	DROP_BOMB =        1 << 3, # Bit 3
 }
 
 var input_path_mapping_reverse := {}
@@ -33,6 +34,8 @@ func serialize_input(all_input: Dictionary) -> PoolByteArray:
 		var input = all_input[path]
 		if input.has('input_vector'):
 			header |= HeaderFlags.HAS_INPUT_VECTOR
+		if input.has('mouse_motion'):
+			header |= HeaderFlags.HAS_MOUSE_MOTION
 		if input.has('firing'):
 			header |= HeaderFlags.HAS_FIRING
 		if input.get('drop_bomb', false):
@@ -44,11 +47,17 @@ func serialize_input(all_input: Dictionary) -> PoolByteArray:
 			var input_vector: Vector2 = input['input_vector']
 			buffer.put_float(input_vector.x)
 			buffer.put_float(input_vector.y)
+		
+		if input.has('mouse_motion'):
+			var mouse_motion_vector: Vector2 = input['mouse_motion']
+			buffer.put_float(mouse_motion_vector.x)
+			buffer.put_float(mouse_motion_vector.y)
 			
 		if input.has('firing'):
-			var shot_location: Vector2 = input['firing']
+			var shot_location: Vector3 = input['firing']
 			buffer.put_float(shot_location.x)
 			buffer.put_float(shot_location.y)
+			buffer.put_float(shot_location.z)
 	
 	buffer.resize(buffer.get_position())
 	return buffer.data_array
@@ -72,8 +81,10 @@ func unserialize_input(serialized: PoolByteArray) -> Dictionary:
 	var header = buffer.get_u8()
 	if header & HeaderFlags.HAS_INPUT_VECTOR:
 		input["input_vector"] = Vector2(buffer.get_float(), buffer.get_float())
+	if header & HeaderFlags.HAS_MOUSE_MOTION:
+		input["mouse_motion"] = Vector2(buffer.get_float(), buffer.get_float())
 	if header & HeaderFlags.HAS_FIRING:
-		input["firing"] = Vector2(buffer.get_float(), buffer.get_float())
+		input["firing"] = Vector3(buffer.get_float(), buffer.get_float(), buffer.get_float())
 	if header & HeaderFlags.DROP_BOMB:
 		input["drop_bomb"] = true
 	

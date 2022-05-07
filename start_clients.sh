@@ -12,7 +12,6 @@ if [ "$number_of_clients" == "" ]; then
     number_of_clients=1
 fi
 
-cd client
 for i in $(seq 1 $number_of_clients);
 do
     echo "Starting client $i"

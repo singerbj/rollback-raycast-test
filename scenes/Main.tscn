@@ -1,9 +1,16 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/Main.gd" type="Script" id=1]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://materials/Material_003.material" type="Material" id=3]
 
-[node name="Main" type="Node2D"]
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 100, 1, 100 )
+
+[sub_resource type="CubeMesh" id=2]
+size = Vector3( 200, 2, 200 )
+
+[node name="Main" type="Node"]
 script = ExtResource( 1 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -60,6 +67,8 @@ margin_bottom = 24.0
 size_flags_horizontal = 3
 text = "127.0.0.1"
 align = 2
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="PortLabel" type="Label" parent="CanvasLayer/ConnectionPanel/GridContainer"]
 margin_top = 33.0
@@ -76,6 +85,8 @@ margin_bottom = 52.0
 size_flags_horizontal = 3
 text = "9999"
 align = 2
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="ServerButton" type="Button" parent="CanvasLayer/ConnectionPanel/GridContainer"]
 margin_top = 56.0
@@ -124,10 +135,25 @@ __meta__ = {
 }
 
 [node name="ServerPlayer" parent="." instance=ExtResource( 2 )]
-position = Vector2( 229, 316 )
 
 [node name="ClientPlayer" parent="." instance=ExtResource( 2 )]
-position = Vector2( 769, 320 )
+
+[node name="StaticBody" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="StaticBody"]
+mesh = SubResource( 2 )
+material/0 = ExtResource( 3 )
+
+[node name="OmniLight" type="OmniLight" parent="."]
+transform = Transform( 0.435596, 0.65974, -0.612372, -0.433013, 0.75, 0.5, 0.789149, 0.0473672, 0.612372, -30, 15, 30 )
+light_indirect_energy = 0.0
+light_bake_mode = 0
+shadow_enabled = true
+omni_range = 81.024
 
 [connection signal="pressed" from="CanvasLayer/MainMenu/LocalButton" to="." method="_on_LocalButton_pressed"]
 [connection signal="pressed" from="CanvasLayer/MainMenu/OnlineButton" to="." method="_on_OnlineButton_pressed"]

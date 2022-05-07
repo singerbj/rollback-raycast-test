@@ -17,7 +17,7 @@ dummynet out proto udp from any to 127.0.0.1 port 9999 pipe 1
 EOF
 
 # Create the dummynet queue
-sudo dnctl pipe 1 config plr 0.3 bw 100Kbit/s delay 15
+sudo dnctl pipe 1 config plr 0.3 bw 100Kbit/s delay 25
 
 # Activate PF
 sudo pfctl -E
